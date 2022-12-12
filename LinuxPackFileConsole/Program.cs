@@ -16,8 +16,8 @@ namespace LinuxPackFileConsole
             packTemplateFolderPath,
             resourcePath,
             packTemplateFolderPathTemp,
-            "CaiXinHxyhb",
-            "财信证券");
+            "ZheShang",
+            "浙商金融终端");
             try
             {
                 packFileManager.DoWork();

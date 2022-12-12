@@ -1,0 +1,23 @@
+#!/bin/bash
+for user in $(getent passwd | grep '/home' | grep '/bin' | cut -d: -f1)
+do
+	if [ -e /opt/apps/cn.com.10jqka/entries/applications/cn.com.10jqka.desktop ]
+	then	
+		if [ -d /home/$user/桌面 ]
+		then
+			cp -f /opt/apps/cn.com.10jqka/entries/applications/cn.com.10jqka.desktop /home/$user/桌面/cn.com.10jqka.desktop
+		fi
+		if [ -d /home/$user/Desktop ]
+		then
+			cp -f /opt/apps/cn.com.10jqka/entries/applications/cn.com.10jqka.desktop /home/$user/Desktop/cn.com.10jqka.desktop
+		fi
+	fi
+	if [ -e /home/$user/桌面/cn.com.10jqka.desktop ]
+	then
+		chmod 777 /home/$user/桌面/cn.com.10jqka.desktop
+	fi
+	if [ -e /home/$user/Desktop/cn.com.10jqka.desktop ]
+	then
+		chmod 777 /home/$user/Desktop/cn.com.10jqka.desktop
+	fi
+done

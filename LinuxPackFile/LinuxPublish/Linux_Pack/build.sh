@@ -28,7 +28,7 @@ do
     fi
 done
 cp -rf ../$rootfile/. $1/opt/apps/cn.com.10jqka/files
-7z x ../$ceffile -o$1/opt/apps/cn.com.10jqka/files
+7z x ../$ceffile -o$1/opt/apps/cn.com.10jqka/files/quotes
 
 chmod -R 755 $1/DEBIAN
 chmod -R 777 $1/opt/apps

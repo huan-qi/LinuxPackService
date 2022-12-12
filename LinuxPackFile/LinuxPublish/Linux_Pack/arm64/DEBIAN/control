@@ -1,0 +1,10 @@
+Package: cn.com.10jqka
+Version: 1.5.1.0
+Architecture: arm64
+Maintainer: wumeijie <wumeijie@myhexin.com>
+Installed-Size: 101691
+Section: office
+Priority: optional
+Homepage: http://www.10jqka.com.cn
+Description: a tool for scanning the stock infomation
+Depends: libgtk-3-0(>=3.22)
