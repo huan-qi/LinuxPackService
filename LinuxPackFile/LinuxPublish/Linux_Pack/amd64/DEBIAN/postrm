@@ -1,0 +1,24 @@
+#!/bin/bash
+for user in $(getent passwd | grep '/home' | grep '/bin' | cut -d: -f1)
+do
+	if [ -e /opt/apps/cn.com.10jqka/files/hevoLog ]
+		then 
+		find /opt/apps/cn.com.10jqka/files/hevoLog  -ctime +1  -name "*.log" -exec rm -rf {} \;
+	fi
+	if [ -e /home/$user/桌面/同花顺Linux.desktop ]
+		then 
+		rm /home/$user/桌面/同花顺Linux.desktop
+	fi
+	if [ -e /home/$user/桌面/cn.com.10jqka.desktop ]
+		then 
+		rm /home/$user/桌面/cn.com.10jqka.desktop
+	fi
+	if [ -e /home/$user/Desktop/cn.com.10jqka.desktop ]
+		then 
+		rm /home/$user/Desktop/cn.com.10jqka.desktop
+	fi
+	if [ -e /home/$user/Desktop/同花顺Linux.desktop ]
+		then 
+		rm /home/$user/Desktop/同花顺Linux.desktop
+	fi
+done

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Categories=Office
+Comment=the tool for stock infomation
+Comment[zh_CN]=提供最全面的行情信息
+Exec=/opt/apps/cn.com.10jqka/files/HevoNext.B2BApp %U
+Icon=/opt/apps/cn.com.10jqka/entries/icons/hicolor/scalable/apps/HevoIcon.svg
+Name=cn.com.10jqka
+Name[zh_CN]=同花顺炒股软件
+Terminal=false
+Type=Application
+X-Deepin-Vendor=user-custom
+StartupWMClass=HevoNext.10jqka.B2BApp
