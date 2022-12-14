@@ -1,10 +1,198 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="LinuxPackResource\CaiXinHxyhb\lib_arm\**" />
+    <Compile Remove="LinuxPackResource\CaiXinHxyhb\lib_x64\**" />
+    <EmbeddedResource Remove="LinuxPackResource\CaiXinHxyhb\lib_arm\**" />
+    <EmbeddedResource Remove="LinuxPackResource\CaiXinHxyhb\lib_x64\**" />
+    <None Remove="LinuxPackResource\CaiXinHxyhb\lib_arm\**" />
+    <None Remove="LinuxPackResource\CaiXinHxyhb\lib_x64\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LinuxPackResource\CaiXinHxyhb\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\CaiXinHxyhb\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\CaiXinHxyhb\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\CaiXinHxyhb\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\DongBei\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\Base\lib_arm\libblazer_native.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\Base\lib_arm\libhcrypt_asm-2.4.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\Base\lib_x64\libblazer_native.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\Base\lib_x64\libhcrypt_asm-2.4.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\DongBei\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\DongBei\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\DongBei\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ShanXi\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ShanXi\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ShanXi\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ShanXi\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\XingYe\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\XingYe\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\XingYe\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\XingYe\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\YinHe\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\YinHe\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\YinHe\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\YinHe\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ZheShang\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ZheShang\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ZheShang\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\ZheShang\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LinuxPublish\cef_linux_amd64.7z">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\cef_linux_arm64.7z">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\DEBIAN\control">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\DEBIAN\md5sums">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\DEBIAN\postinst">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\DEBIAN\postrm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\entries\applications\cn.com.10jqka.desktop">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\entries\icons\hicolor\scalable\apps\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\changelog.Debian.gz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\copyright">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\README.Debian">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\files\quotes\hevoLog\.gitkeep">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\opt\apps\cn.com.10jqka\info">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\amd64\usr\share\applications\cn.com.10jqka.desktop">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\DEBIAN\control">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\DEBIAN\md5sums">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\DEBIAN\postinst">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\DEBIAN\postrm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\entries\applications\cn.com.10jqka.desktop">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\entries\icons\hicolor\scalable\apps\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\changelog.Debian.gz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\copyright">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\files\quotes\doc\cn.com.10jqka\README.Debian">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\files\quotes\hevoLog\.gitkeep">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\opt\apps\cn.com.10jqka\info">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\arm64\usr\share\applications\cn.com.10jqka.desktop">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPublish\Linux_Pack\build.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="LinuxPackResource\DongBei\res\" />
+    <Folder Include="LinuxPackResource\ShanXi\res\" />
+    <Folder Include="LinuxPackResource\XingYe\res\" />
+    <Folder Include="LinuxPackResource\YinHe\res\" />
+    <Folder Include="LinuxPackResource\ZheShang\res\" />
+  </ItemGroup>
 
   <!--<ItemGroup>
     <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="7.0.0-preview.6.22324.4" />

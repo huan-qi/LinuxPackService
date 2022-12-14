@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hevo>
+  <Product>
+    <ProductId>HevoB2BShanXi</ProductId>
+    <ProductName>山西证券信创版</ProductName>
+    <DefaultInstallPath>C:\山西证券</DefaultInstallPath>
+    <CheckUrl>http://60.191.99.112/api/checkversion2</CheckUrl>
+    <AuthCenterUrl>tcp://122.224.144.140:8601</AuthCenterUrl>
+    <AuthCenterUrl>tcp://122.112.132.132:8601</AuthCenterUrl>
+    <UnistQuestionUrl></UnistQuestionUrl>
+    <OfficialDownloadUrl>https://www.stocke.com.cn/main/fwzx/rjxz/index.shtml</OfficialDownloadUrl>
+    <InstallProtocolsUrl></InstallProtocolsUrl>
+    <CheckPassportUrl></CheckPassportUrl>
+	<ComponentItems>
+		<Component Type="Trade">Trade</Component>
+	</ComponentItems>
+  </Product>
+</hevo>

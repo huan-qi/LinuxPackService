@@ -1,27 +1,34 @@
-﻿using System.Text.RegularExpressions;
+﻿using LinuxPackFile;
+using System.Text.RegularExpressions;
 
 namespace LinuxPackFileConsole
 {
     public class PackFileManager
     {
-        private readonly string _sourceFolderPath;
-        private readonly string _resourceFolderPath;
         private readonly string _outputFolderPath;
         private readonly string _productName;
 
+        /// <summary>
+        /// 待进行内容修改的文件列表
+        /// </summary>
         public List<string> ModifyFileNameList { get; private set; }
+        /// <summary>
+        /// 待进行重命名的文件夹字典
+        /// </summary>
         public Dictionary<string, string> ReplaceFolderNameDic { get; private set; }
+        /// <summary>
+        /// 待进行重命名的文件字典
+        /// </summary>
         public Dictionary<string, string> ReplaceFileNameDic { get; private set; }
+        /// <summary>
+        /// 待进行修改的内容字典
+        /// </summary>
         public Dictionary<string, string> ReplaceStrDic { get; private set; }
 
         public PackFileManager(
-            string sourceFolderPath,
-            string resourceFolderPath,
             string outputFolderPath,
             string productName)
         {
-            _sourceFolderPath = sourceFolderPath;
-            _resourceFolderPath = resourceFolderPath;
             _outputFolderPath = outputFolderPath;
             _productName = productName;
 
@@ -31,11 +38,9 @@ namespace LinuxPackFileConsole
             ReplaceStrDic = new Dictionary<string, string>();
         }
         public PackFileManager(
-            string sourceFolderPath,
-            string resourceFolderPath,
             string outputFolderPath,
             string productName,
-            string chineseName) : this(sourceFolderPath, resourceFolderPath, outputFolderPath, productName)
+            string chineseName) : this(outputFolderPath, productName)
         {
             ModifyFileNameList.Add("control");
             ModifyFileNameList.Add("md5sums");
@@ -56,17 +61,18 @@ namespace LinuxPackFileConsole
         }
         public void DoWork()
         {
-            CopyToTarget(_sourceFolderPath, _outputFolderPath);
+            CopyToTarget(PackPath.PackTemplateFolderPath, _outputFolderPath);
             foreach (var keyPair in ReplaceFolderNameDic)
             {
-                ChildFolderMoveTo(_outputFolderPath, keyPair.Key, keyPair.Value);
+                FolderMoveTo(_outputFolderPath, keyPair.Key, keyPair.Value);
             }
             foreach (var keyPair in ReplaceFileNameDic)
             {
                 FileMoveTo(_outputFolderPath, keyPair.Key, keyPair.Value);
             }
             ReplaceAllFiles(_outputFolderPath, ModifyFileNameList, ReplaceStrDic);
-            PackResourceMoveTo(_outputFolderPath, _resourceFolderPath, _productName);
+            
+            PackResourceMoveTo(_outputFolderPath, PackPath.PackResourcePath, _productName);
         }
 
         private void CopyToTarget(string sourcePath, string destPath)
@@ -87,7 +93,13 @@ namespace LinuxPackFileConsole
                 }
             }
         }
-        private void ChildFolderMoveTo(string rootPath, string sourceName, string destName)
+        /// <summary>
+        /// 文件夹重命名
+        /// </summary>
+        /// <param name="rootPath">根路径</param>
+        /// <param name="sourceName">源文件夹名</param>
+        /// <param name="destName">新文件夹名</param>
+        private void FolderMoveTo(string rootPath, string sourceName, string destName)
         {
             var directoryInfo = new DirectoryInfo(rootPath);
             var children = directoryInfo.GetDirectories();
@@ -104,9 +116,15 @@ namespace LinuxPackFileConsole
                         childFolder = destFolder;
                     }
                 }
-                ChildFolderMoveTo(childFolder, sourceName, destName);
+                FolderMoveTo(childFolder, sourceName, destName);
             }
         }
+        /// <summary>
+        /// 文件重命名
+        /// </summary>
+        /// <param name="rootPath">根路径</param>
+        /// <param name="sourceName">源文件名</param>
+        /// <param name="destName">新文件名</param>
         private void FileMoveTo(string rootPath, string sourceName, string destName)
         {
             var directoryInfo = new DirectoryInfo(rootPath);
@@ -120,6 +138,14 @@ namespace LinuxPackFileConsole
                 }
             }
         }
+        /// <summary>
+        /// 修改文件内容
+        /// 修改根路径下所有replaceFile标识的文件内容
+        /// 内容修改根据replaceContent
+        /// </summary>
+        /// <param name="rootPath">根路径</param>
+        /// <param name="replaceFile">需要进行内容修改的文件集合</param>
+        /// <param name="replaceContent">内容替换方案</param>
         private void ReplaceAllFiles(string rootPath, List<string> replaceFile, Dictionary<string, string> replaceContent)
         {
             var directoryInfo = new DirectoryInfo(rootPath);
@@ -142,6 +168,12 @@ namespace LinuxPackFileConsole
                 File.WriteAllText(filePath, sourceText);
             }
         }
+        /// <summary>
+        /// 将打包模板所需资源拷贝的目录中
+        /// </summary>
+        /// <param name="rootPath">根路径</param>
+        /// <param name="resourcePath">资源所在位置</param>
+        /// <param name="productName">项目名</param>
         private void PackResourceMoveTo(string rootPath, string resourcePath, string productName)
         {
             var targetFilePath = Path.Combine(resourcePath, productName, "HevoIcon.svg");
