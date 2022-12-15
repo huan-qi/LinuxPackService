@@ -1,6 +1,5 @@
 ﻿using LinuxPackFile;
 using System.Xml;
-using System.Linq;
 
 namespace LinuxPackFileConsole
 {
@@ -8,7 +7,7 @@ namespace LinuxPackFileConsole
     {
         public static void Main(string[] args)
         {
-            if (args == null || args.Length < 5)
+            if (args == null || args.Length < 4)
             {
                 Console.WriteLine("请输入参数 1. 券商标识（eg: ZheShang）2. 版本号（eg: 2.3.0.1）3. 是发是预发布版本（eg: true）4. 输出路径");
                 return;
@@ -16,9 +15,9 @@ namespace LinuxPackFileConsole
 
             var productType = args[0];
             var productName = GetProductName(productType);
-            var productVersion = args[2];
-            var isPreRelease = args[3];
-            var outputPath = args[4];
+            var productVersion = args[1];
+            var isPreRelease = args[2];
+            var outputPath = args[3];
 
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory.ToString();
             string packTemplateFolderPathTemp = Path.Combine(baseDirectory, "Temp");
@@ -48,7 +47,6 @@ namespace LinuxPackFileConsole
                 amdAppPath, 
                 armAppPath,
                 packTemplateFolderPathTemp);
-
             try
             {
                 packDebManager.DoWork();

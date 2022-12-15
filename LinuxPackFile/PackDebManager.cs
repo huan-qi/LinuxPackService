@@ -34,15 +34,15 @@ namespace LinuxPackFile
 
         public void DoWork()
         {
-            var baseResPath = Path.Combine(PackPath.PackResourcePath, _productTypeName, "res");
+            var baseResPath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "res");
 
-            var amdLibSourcePath = Path.Combine(PackPath.PackResourcePath, "Base", "lib_x64");
-            var armLibSourcePath = Path.Combine(PackPath.PackResourcePath, "Base", "lib_arm");
+            var amdLibSourcePath = Path.Combine(PackPath.PackResourcePath, "base", "lib_x64");
+            var armLibSourcePath = Path.Combine(PackPath.PackResourcePath, "base", "lib_arm");
             var amdLibTargetPath = Path.Combine(_amdAppTargetPath, "lib");
             var armLibTargetPath = Path.Combine(_armAppTargetPath, "lib");
 
-            var amdTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName, "transaction_x64");
-            var armTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName, "transaction_arm");
+            var amdTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "transaction_x64");
+            var armTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "transaction_arm");
             var amdTransactionTargetPath = Path.Combine(_amdAppTargetPath, "transaction");
             var armTransactionTargetPath = Path.Combine(_armAppTargetPath, "transaction");
 

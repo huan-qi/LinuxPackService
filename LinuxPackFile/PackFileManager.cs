@@ -46,15 +46,15 @@ namespace LinuxPackFileConsole
             ModifyFileNameList.Add("md5sums");
             ModifyFileNameList.Add("postinst");
             ModifyFileNameList.Add("postrm");
-            ModifyFileNameList.Add($"cn.com.{productName}.desktop");
+            ModifyFileNameList.Add($"cn.com.{_productName.ToLower()}.desktop");
             ModifyFileNameList.Add("info");
             ModifyFileNameList.Add("build.sh");
 
-            ReplaceFolderNameDic.Add("cn.com.10jqka", $"cn.com.{productName}");
-            ReplaceFileNameDic.Add("cn.com.10jqka.desktop", $"cn.com.{productName}.desktop");
+            ReplaceFolderNameDic.Add("cn.com.10jqka", $"cn.com.{_productName.ToLower()}");
+            ReplaceFileNameDic.Add("cn.com.10jqka.desktop", $"cn.com.{_productName.ToLower()}.desktop");
 
-            ReplaceStrDic.Add("cn.com.10jqka", $"cn.com.{productName}");
-            ReplaceStrDic.Add("HevoNext.10jqka.B2BApp", $"HevoNext.{productName}.B2BApp");
+            ReplaceStrDic.Add("cn.com.10jqka", $"cn.com.{_productName.ToLower()}");
+            ReplaceStrDic.Add("HevoNext.10jqka.B2BApp", $"HevoNext.{_productName.ToLower()}.B2BApp");
             ReplaceStrDic.Add("同花顺Beta", chineseName);
             ReplaceStrDic.Add("同花顺Linux", chineseName);
             ReplaceStrDic.Add("同花顺炒股软件", chineseName);
@@ -72,7 +72,8 @@ namespace LinuxPackFileConsole
             }
             ReplaceAllFiles(_outputFolderPath, ModifyFileNameList, ReplaceStrDic);
             
-            PackResourceMoveTo(_outputFolderPath, PackPath.PackResourcePath, _productName);
+            var sourceSvgDirPath = Path.Combine(PackPath.PackResourcePath, _productName.ToLower());
+            PackResourceMoveTo(_outputFolderPath, sourceSvgDirPath);
         }
 
         private void CopyToTarget(string sourcePath, string destPath)
@@ -174,10 +175,10 @@ namespace LinuxPackFileConsole
         /// <param name="rootPath">根路径</param>
         /// <param name="resourcePath">资源所在位置</param>
         /// <param name="productName">项目名</param>
-        private void PackResourceMoveTo(string rootPath, string resourcePath, string productName)
+        private void PackResourceMoveTo(string rootPath, string resourcePath)
         {
-            var targetFilePath = Path.Combine(resourcePath, productName, "HevoIcon.svg");
-            if (!File.Exists(targetFilePath))
+            var sourceFilePath = Path.Combine(resourcePath, "HevoIcon.svg");
+            if (!File.Exists(sourceFilePath))
             {
                 return;
             }
@@ -186,7 +187,7 @@ namespace LinuxPackFileConsole
 
             foreach (var fileInfo in fileInfos)
             {
-                File.Copy(targetFilePath, fileInfo.FullName, true);
+                File.Copy(sourceFilePath, fileInfo.FullName, true);
             }
         }
     }
