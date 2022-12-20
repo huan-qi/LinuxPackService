@@ -71,6 +71,10 @@ namespace LinuxPackFileConsole
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load("ProductConfig.xml");
             var node = xmlDocument.SelectSingleNode($"Product/{productType}");
+            if (node == null)
+            {
+                throw new ArgumentException("productType 类型错误，无此券商");
+            }
             return node.InnerText;
         }
     }
