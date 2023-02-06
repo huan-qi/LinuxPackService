@@ -5,6 +5,9 @@ namespace LinuxPackFile
 {
     public class PackDebManager
     {
+        private const string LINUX_TEMPLATE = "LinuxPublish";
+        private const string LINUX_PACK_TEMPLATE = "Linux_Pack";
+
         private string _productTypeName;
         private string _version;
         private bool _isPreRelease;
@@ -28,8 +31,8 @@ namespace LinuxPackFile
             _amdAppSourcePath = amdAppSourcePath;
             _armAppSourcePath = armAppSourcePath;
             _packTemplatePathTemp = packTemplatePathTemp;
-            _amdAppTargetPath = Path.Combine(packTemplatePathTemp, "LinuxPublish", "linux-x64", "quotes");
-            _armAppTargetPath = Path.Combine(packTemplatePathTemp, "LinuxPublish", "linux-arm64", "quotes");
+            _amdAppTargetPath = Path.Combine(packTemplatePathTemp, LINUX_TEMPLATE, "linux-x64", "quotes");
+            _armAppTargetPath = Path.Combine(packTemplatePathTemp, LINUX_TEMPLATE, "linux-arm64", "quotes");
         }
 
         public void DoWork()
@@ -56,14 +59,26 @@ namespace LinuxPackFile
         }
         public void Complete(string outputPath)
         {
-            var linuxPackPath = Path.Combine(_packTemplatePathTemp, "LinuxPublish", "Linux_Pack");
+            var linuxPackPath = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
             DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
             foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
             {
                 var targetPath = Path.Combine(outputPath, debFile.Name);
+                Console.WriteLine($"DebFileFullName:{debFile.FullName}; TargetPath: {targetPath}");
                 File.Copy(debFile.FullName, targetPath, true);
             }
             DeleteDirectory(_packTemplatePathTemp);
+        }
+        public IEnumerable<FileInfo> Complete()
+        {
+            var debFiles = new List<FileInfo>();
+            var linuxPackPath = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
+            DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
+            foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
+            {
+                debFiles.Add(debFile);
+            }
+            return debFiles;
         }
 
         private void CopyFilesTo(string amdSourcePath, string armSourcePath, string amdTargetPath, string armTargetPath)
@@ -153,7 +168,7 @@ namespace LinuxPackFile
         /// <param name="command"></param>
         private void ExecuteCommand(string command)
         {
-            var workingDriectory = Path.Combine(_packTemplatePathTemp, "LinuxPublish", "Linux_Pack");
+            var workingDriectory = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
             Process process = new Process();
             process.StartInfo.FileName = "/bin/bash";
             process.StartInfo.Arguments = command;
