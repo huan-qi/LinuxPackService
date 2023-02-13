@@ -1,84 +1,110 @@
-﻿using System.Diagnostics;
+﻿using LinuxPackFile.Model;
+using System.Diagnostics;
+using System.IO.Compression;
 using System.Xml;
 
 namespace LinuxPackFile
 {
-    public class PackDebManager
+    /// <summary>
+    /// 拼接用于打包的文件并打包
+    /// </summary>
+    public class PackPublishAppManager
     {
-        private const string LINUX_TEMPLATE = "LinuxPublish";
-        private const string LINUX_PACK_TEMPLATE = "Linux_Pack";
+        private readonly string _baseDirectory;
 
-        private string _productTypeName;
-        private string _version;
-        private bool _isPreRelease;
-        private string _amdAppSourcePath;
-        private string _armAppSourcePath;
-        private string _amdAppTargetPath;
-        private string _armAppTargetPath;
-        private string _packTemplatePathTemp;
-
-        public PackDebManager(
-            string productTypeName,
-            string version,
-            bool isPreRelease,
-            string amdAppSourcePath, 
-            string armAppSourcePath, 
-            string packTemplatePathTemp)
+        public PackPublishAppManager(string baseDirectory)
         {
-            _productTypeName = productTypeName;
-            _version = version;
-            _isPreRelease = isPreRelease;
-            _amdAppSourcePath = amdAppSourcePath;
-            _armAppSourcePath = armAppSourcePath;
-            _packTemplatePathTemp = packTemplatePathTemp;
-            _amdAppTargetPath = Path.Combine(packTemplatePathTemp, LINUX_TEMPLATE, "linux-x64", "quotes");
-            _armAppTargetPath = Path.Combine(packTemplatePathTemp, LINUX_TEMPLATE, "linux-arm64", "quotes");
+            _baseDirectory = baseDirectory;
         }
 
-        public void DoWork()
+        /// <summary>
+        /// 拼接文件，进行打包
+        /// </summary>
+        public void DoWork(string packTemplatePathTemp, string productIdentity, string version, bool isPreRelease)
         {
-            var baseResPath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "res");
+            var baseResPath = Path.Combine(PackPath.PackResourcePath, productIdentity.ToLower(), "res");
+
+            var amdAppSourcePath = Path.Combine(_baseDirectory, version, PackPath.LINUX_X64_APPLICATION);
+            var armAppSourcePath = Path.Combine(_baseDirectory, version, PackPath.LINUX_ARM_APPLICATION);
+            var amdAppTargetPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_X64_APPLICATION, "quotes");
+            var armAppTargetPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_ARM_APPLICATION, "quotes");
 
             var amdLibSourcePath = Path.Combine(PackPath.PackResourcePath, "base", "lib_x64");
             var armLibSourcePath = Path.Combine(PackPath.PackResourcePath, "base", "lib_arm");
-            var amdLibTargetPath = Path.Combine(_amdAppTargetPath, "lib");
-            var armLibTargetPath = Path.Combine(_armAppTargetPath, "lib");
+            var amdLibTargetPath = Path.Combine(amdAppTargetPath, "lib");
+            var armLibTargetPath = Path.Combine(armAppTargetPath, "lib");
 
-            var amdTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "transaction_x64");
-            var armTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, _productTypeName.ToLower(), "transaction_arm");
-            var amdTransactionTargetPath = Path.Combine(_amdAppTargetPath, "transaction");
-            var armTransactionTargetPath = Path.Combine(_armAppTargetPath, "transaction");
+            var amdTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, productIdentity.ToLower(), "transaction_x64");
+            var armTransactionSourcePath = Path.Combine(PackPath.PackResourcePath, productIdentity.ToLower(), "transaction_arm");
+            var amdTransactionTargetPath = Path.Combine(amdAppTargetPath, "..", "transaction");
+            var armTransactionTargetPath = Path.Combine(armAppTargetPath, "..", "transaction");
 
-            CopyFilesTo(_amdAppSourcePath, _armAppSourcePath, _amdAppTargetPath, _armAppTargetPath);
+            if (!Directory.Exists(amdAppSourcePath))
+            {
+                throw new Exception($"拼接文件并打包：未找到x64应用{version}公版包");
+            }
+            if (!Directory.Exists(armAppSourcePath))
+            {
+                throw new Exception($"拼接文件并打包：未找到arm应用{version}公版包");
+            }
+            if (!Directory.Exists(amdLibSourcePath))
+            {
+                throw new Exception("拼接文件并打包：未找到lib x64依赖库");
+            }
+            if (!Directory.Exists(armLibSourcePath))
+            {
+                throw new Exception("拼接文件并打包：未找到lib arm依赖库");
+            }
+
+            CopyFilesTo(amdAppSourcePath, armAppSourcePath, amdAppTargetPath, armAppTargetPath);
             CopyLibFilesTo(amdLibSourcePath, armLibSourcePath, amdLibTargetPath, armLibTargetPath);
-            CopyResFilesTo(baseResPath, _amdAppTargetPath, _armAppTargetPath);
+            CopyResFilesTo(baseResPath, amdAppTargetPath, armAppTargetPath);
             CopyFilesTo(amdTransactionSourcePath, armTransactionSourcePath, amdTransactionTargetPath, armTransactionTargetPath);
 
-            ModifyProperties();
-            BuildDeb();
+            ModifyProperties(amdAppTargetPath, armAppTargetPath, productIdentity, version, isPreRelease);
+            BuildDeb(version, packTemplatePathTemp);
         }
-        public void Complete(string outputPath)
+        /// <summary>
+        /// 完成后将生成的两个deb文件拷贝到指定位置
+        /// </summary>
+        /// <param name="outputPath">生成文件位置</param>
+        public void Complete(string outputPath, string packTemplatePathTemp)
         {
-            var linuxPackPath = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
+            var linuxPackPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_PACK_TEMPLATE);
             DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
+            if (!linuxPackDirectory.Exists)
+            {
+                return;
+            }
             foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
             {
                 var targetPath = Path.Combine(outputPath, debFile.Name);
-                Console.WriteLine($"DebFileFullName:{debFile.FullName}; TargetPath: {targetPath}");
                 File.Copy(debFile.FullName, targetPath, true);
             }
-            DeleteDirectory(_packTemplatePathTemp);
+            DeleteDirectory(packTemplatePathTemp);
         }
-        public IEnumerable<FileInfo> Complete()
+        /// <summary>
+        /// 完成后返回生成的两个deb文件流
+        /// </summary>
+        /// <returns>文件流</returns>
+        public IEnumerable<FileInfo> Complete(string packTemplatePathTemp)
         {
             var debFiles = new List<FileInfo>();
-            var linuxPackPath = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
+            var linuxPackPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_PACK_TEMPLATE);
             DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
+            if (!linuxPackDirectory.Exists)
+            {
+                return debFiles;
+            }
             foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
             {
                 debFiles.Add(debFile);
             }
             return debFiles;
+        }
+        public void DeleteTempDirectory(string packTemplatePathTemp)
+        {
+            DeleteDirectory(packTemplatePathTemp);
         }
 
         private void CopyFilesTo(string amdSourcePath, string armSourcePath, string amdTargetPath, string armTargetPath)
@@ -135,19 +161,19 @@ namespace LinuxPackFile
         /// 修改是否是预发布版本
         /// </summary>
         /// <returns></returns>
-        private void ModifyProperties()
+        private void ModifyProperties(string amdAppTargetPath, string armAppTargetPath, string productIdentity, string versionParam, bool isPreRelesseParam)
         {
             const string properties = "Properties";
             const string resourcesFile = "Resources.xml";
 
-            var amdFilePath = Path.Combine(_amdAppTargetPath, properties, resourcesFile);
-            var armFilePath = Path.Combine(_armAppTargetPath, properties, resourcesFile);
-            var ret = ModifyProperty(amdFilePath);
+            var amdFilePath = Path.Combine(amdAppTargetPath, properties, resourcesFile);
+            var armFilePath = Path.Combine(armAppTargetPath, properties, resourcesFile);
+            var ret = ModifyProperty(amdFilePath, productIdentity, versionParam, isPreRelesseParam);
             if (!ret)
             {
                 throw new Exception("修改amd Properties Resources.xml 报错");
             }
-            ret = ModifyProperty(armFilePath);
+            ret = ModifyProperty(armFilePath, productIdentity, versionParam, isPreRelesseParam);
             if (!ret)
             {
                 throw new Exception("修改arm Properties Resources.xml 报错");
@@ -156,19 +182,19 @@ namespace LinuxPackFile
         /// <summary>
         /// 编译Deb包
         /// </summary>
-        private void BuildDeb()
-        {
-            ExecuteCommand(@"chmod a+x build.sh");
-            ExecuteCommand($@"./build.sh amd64 {_version}");
-            ExecuteCommand($@"./build.sh arm64 {_version}");
+        private void BuildDeb(string version, string packTemplatePathTemp)
+        { 
+            ExecuteCommand(@"chmod a+x build.sh", packTemplatePathTemp);
+            ExecuteCommand($@"./build.sh amd64 {version}", packTemplatePathTemp);
+            ExecuteCommand($@"./build.sh arm64 {version}", packTemplatePathTemp);
         }
         /// <summary>
         /// 执行命令行
         /// </summary>
         /// <param name="command"></param>
-        private void ExecuteCommand(string command)
+        private void ExecuteCommand(string command, string packTemplatePathTemp)
         {
-            var workingDriectory = Path.Combine(_packTemplatePathTemp, LINUX_TEMPLATE, LINUX_PACK_TEMPLATE);
+            var workingDriectory = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_PACK_TEMPLATE);
             Process process = new Process();
             process.StartInfo.FileName = "/bin/bash";
             process.StartInfo.Arguments = command;
@@ -181,7 +207,7 @@ namespace LinuxPackFile
         /// 将文件夹中的内容复制到指定位置
         /// </summary>
         /// <param name="sourcePath"></param>
-        /// <param name="destPath"></param>
+        /// <param name="destPath"></param>13333333
         private void CopyTo(string sourcePath, string destPath)
         {
             DirectoryInfo di = Directory.CreateDirectory(destPath);
@@ -246,7 +272,7 @@ namespace LinuxPackFile
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        private bool ModifyProperty(string filePath)
+        private bool ModifyProperty(string filePath, string productIdentity, string versionParam, bool isPreRelesseParam)
         {
             const string ptnXmlPath = "ApplicationConfig/ProductTypeName";
             const string verXmlPath = "ApplicationConfig/Version";
@@ -262,9 +288,9 @@ namespace LinuxPackFile
             {
                 return false;
             }
-            productTypeName.InnerText = _productTypeName;
-            version.InnerText = _version;
-            isPreRelease.InnerText = _isPreRelease.ToString().ToLower();
+            productTypeName.InnerText = productIdentity;
+            version.InnerText = versionParam;
+            isPreRelease.InnerText = isPreRelesseParam.ToString().ToLower();
             xmlDocument.Save(filePath);
             return true;
         }

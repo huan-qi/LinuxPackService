@@ -3,7 +3,11 @@
 		<ProductId>HevoB2BYinHe</ProductId>
 		<ProductName>双子星新一代行情交易终端</ProductName>
 		<DefaultInstallPath>C:\双子星新一代行情交易终端</DefaultInstallPath>
-		<AuthCenterUrl type="0">tcp://219.143.214.200:6201</AuthCenterUrl>
+    <AuthCenterUrl type="0">tcp://60.191.110.216:8799</AuthCenterUrl>
+    <AuthCenterUrl type="0">tcp://60.12.249.215:8799</AuthCenterUrl>
+    <AuthCenterUrl type="0">tcp://39.170.30.39:8799</AuthCenterUrl>
+    <AuthCenterUrl type="0">tcp://218.108.13.249:8799</AuthCenterUrl>
+    <AuthCenterUrl type="0">tcp://219.143.214.200:6201</AuthCenterUrl>
 		<CheckUrl>http://szxupdate.chinastock.com.cn:9011/api/checkversion2</CheckUrl>
 		<UnistQuestionUrl></UnistQuestionUrl>
 		<OfficialDownloadUrl>http://www.chinastock.com.cn/yhwz/service/download.shtml</OfficialDownloadUrl>

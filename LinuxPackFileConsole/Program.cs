@@ -1,4 +1,7 @@
-﻿using LinuxPackFile;
+﻿using HtmlAgilityPack;
+using LinuxPackFile;
+using System.Net;
+using System.Text;
 using System.Xml;
 
 namespace LinuxPackFileConsole
@@ -6,6 +9,65 @@ namespace LinuxPackFileConsole
     class Program
     {
         public static void Main(string[] args)
+        {
+            var task = FindLinuxPackFileDownloadUrl(new Version("2.3.16517.11"));
+            var result = task.Result;
+            
+        }
+        private static async Task<string> FindLinuxPackFileDownloadUrl(Version targetVersion)
+        {
+            var hevoClientUrl = @"https://www.baidu.com";
+            var packLinkRouter = @"/html/body/table/tbody/tr/td/a";
+            var linuxPackHeader = "result_thshq-b2b-client-linux";
+            var href = "href";
+
+            HttpClient httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(hevoClientUrl);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            string html = string.Empty;
+            using (var sr = new StreamReader(responseStream, Encoding.UTF8))
+            {
+                html = sr.ReadToEnd();
+            }
+            //var html = await httpClient.GetStringAsync(hevoClientUrl);
+
+
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            var nodes = doc.DocumentNode.SelectNodes(packLinkRouter);
+            if (nodes == null)
+            {
+                throw new Exception($"无法从{hevoClientUrl}读取指定节点信息,节点为:{packLinkRouter}");
+            }
+            var packageUrls = new List<string>();
+            foreach (var node in nodes)
+            {
+                var url = node.GetAttributeValue(href, string.Empty);
+                packageUrls.Add(url);
+            }
+            var linuxPackageUrls = packageUrls.Where(item => item.Contains(linuxPackHeader));
+            var linuxPackageUrl = linuxPackageUrls.FirstOrDefault(item => targetVersion == GetVersionFromUrls(item));
+            if (string.IsNullOrEmpty(linuxPackageUrl))
+            {
+                throw new Exception("没有找到对应版本号的Linux包");
+            }
+            var result = Path.Combine(hevoClientUrl, linuxPackageUrl, $"{targetVersion.ToString()}.zip");
+            return result;
+
+            Version GetVersionFromUrls(string url)
+            {
+                var toyear = DateTime.Now.Year.ToString();
+                var startStr = "linux-";
+                var endStr = $"_{toyear}";
+
+                var startIndex = url.IndexOf(startStr) + startStr.Length;
+                var endIndex = url.IndexOf(endStr);
+                var versionStr = url.Substring(startIndex, endIndex - startIndex);
+
+                return new Version(versionStr);
+            }
+        }
+        public static void Main1(string[] args)
         {
             if (args == null || args.Length < 4)
             {
@@ -22,16 +84,11 @@ namespace LinuxPackFileConsole
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory.ToString();
             string packTemplateFolderPathTemp = Path.Combine(baseDirectory, "Temp");
             ClearTemp(packTemplateFolderPathTemp);
-            string amdAppPath = Path.Combine(baseDirectory, "linux-x64");
-            string armAppPath = Path.Combine(baseDirectory, "linux-arm64");
 
-            PackFileManager packFileManager = new PackFileManager(
-            packTemplateFolderPathTemp,
-            productType,
-            productName);
+            PackTemplateManager packFileManager = new PackTemplateManager();
             try
             {
-                packFileManager.DoWork();
+                packFileManager.DoWork(packTemplateFolderPathTemp, productType, productName);
             }
             catch (Exception ex)
             {
@@ -41,17 +98,11 @@ namespace LinuxPackFileConsole
             }
 
             bool.TryParse(isPreRelease, out bool isPre);
-            PackDebManager packDebManager = new PackDebManager(
-                productType,
-                productVersion,
-                isPre, 
-                amdAppPath, 
-                armAppPath,
-                packTemplateFolderPathTemp);
+            PackPublishAppManager packDebManager = new PackPublishAppManager(baseDirectory);
             try
             {
-                packDebManager.DoWork();
-                packDebManager.Complete(outputPath);
+                packDebManager.DoWork(packTemplateFolderPathTemp, productType, productVersion, isPre);
+                packDebManager.Complete(outputPath, packTemplateFolderPathTemp);
             }
             catch (Exception ex)
             {

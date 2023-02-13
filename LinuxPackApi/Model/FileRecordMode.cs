@@ -1,6 +1,6 @@
 ﻿namespace LinuxPackApi.Model
 {
-    internal class FileRecordMode
+    public class FileRecordMode
     {
         public string FileName { get; set; }
         public byte[] FileBytes { get; set; }

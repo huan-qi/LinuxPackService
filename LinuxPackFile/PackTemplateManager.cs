@@ -3,11 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace LinuxPackFileConsole
 {
-    public class PackFileManager
+    /// <summary>
+    /// 构建打包模板
+    /// </summary>
+    public class PackTemplateManager
     {
-        private readonly string _outputFolderPath;
-        private readonly string _productName;
-
         /// <summary>
         /// 待进行内容修改的文件列表
         /// </summary>
@@ -25,55 +25,58 @@ namespace LinuxPackFileConsole
         /// </summary>
         public Dictionary<string, string> ReplaceStrDic { get; private set; }
 
-        public PackFileManager(
-            string outputFolderPath,
-            string productName)
+        public PackTemplateManager()
         {
-            _outputFolderPath = outputFolderPath;
-            _productName = productName;
-
             ModifyFileNameList = new List<string>();
             ReplaceFolderNameDic = new Dictionary<string, string>();
             ReplaceFileNameDic = new Dictionary<string, string>();
             ReplaceStrDic = new Dictionary<string, string>();
         }
-        public PackFileManager(
-            string outputFolderPath,
-            string productName,
-            string chineseName) : this(outputFolderPath, productName)
+
+        public void DoWork(string packTemplatePathTemp, string productIdentity, string productName)
         {
             ModifyFileNameList.Add("control");
             ModifyFileNameList.Add("md5sums");
             ModifyFileNameList.Add("postinst");
             ModifyFileNameList.Add("postrm");
-            ModifyFileNameList.Add($"cn.com.{_productName.ToLower()}.desktop");
+            ModifyFileNameList.Add($"cn.com.{productIdentity.ToLower()}.desktop");
             ModifyFileNameList.Add("info");
             ModifyFileNameList.Add("build.sh");
 
-            ReplaceFolderNameDic.Add("cn.com.10jqka", $"cn.com.{_productName.ToLower()}");
-            ReplaceFileNameDic.Add("cn.com.10jqka.desktop", $"cn.com.{_productName.ToLower()}.desktop");
+            ReplaceFolderNameDic.Add("cn.com.10jqka", $"cn.com.{productIdentity.ToLower()}");
+            ReplaceFileNameDic.Add("cn.com.10jqka.desktop", $"cn.com.{productIdentity.ToLower()}.desktop");
 
-            ReplaceStrDic.Add("cn.com.10jqka", $"cn.com.{_productName.ToLower()}");
-            ReplaceStrDic.Add("HevoNext.10jqka.B2BApp", $"HevoNext.{_productName.ToLower()}.B2BApp");
-            ReplaceStrDic.Add("同花顺Beta", chineseName);
-            ReplaceStrDic.Add("同花顺Linux", chineseName);
-            ReplaceStrDic.Add("同花顺炒股软件", chineseName);
-        }
-        public void DoWork()
-        {
-            CopyToTarget(PackPath.PackTemplateFolderPath, _outputFolderPath);
-            foreach (var keyPair in ReplaceFolderNameDic)
+            ReplaceStrDic.Add("cn.com.10jqka", $"cn.com.{productIdentity.ToLower()}");
+            ReplaceStrDic.Add("HevoNext.10jqka.B2BApp", $"HevoNext.{productIdentity.ToLower()}.B2BApp");
+            ReplaceStrDic.Add("同花顺Beta", productName);
+            ReplaceStrDic.Add("同花顺Linux", productName);
+            ReplaceStrDic.Add("同花顺炒股软件", productName);
+
+            if (!Directory.Exists(PackPath.PackTemplateFolderPath))
             {
-                FolderMoveTo(_outputFolderPath, keyPair.Key, keyPair.Value);
+                throw new Exception("生成打包模板：未找到基础打包模板，打包服务中没有 LinxuPublish 文件夹");
             }
-            foreach (var keyPair in ReplaceFileNameDic)
+            CopyToTarget(PackPath.PackTemplateFolderPath, packTemplatePathTemp);
+            if (!Directory.Exists(packTemplatePathTemp))
             {
-                FileMoveTo(_outputFolderPath, keyPair.Key, keyPair.Value);
+                throw new Exception("生成打包模板：创建临时打包文件夹失败");
             }
-            ReplaceAllFiles(_outputFolderPath, ModifyFileNameList, ReplaceStrDic);
+            foreach (var keyPair in ReplaceFolderNameDic) //文件夹重命名
+            {
+                FolderMoveTo(packTemplatePathTemp, keyPair.Key, keyPair.Value);
+            }
+            foreach (var keyPair in ReplaceFileNameDic) //文件重命名
+            {
+                FileMoveTo(packTemplatePathTemp, keyPair.Key, keyPair.Value);
+            }
+            ReplaceAllFiles(packTemplatePathTemp, ModifyFileNameList, ReplaceStrDic);
             
-            var sourceSvgDirPath = Path.Combine(PackPath.PackResourcePath, _productName.ToLower());
-            PackResourceMoveTo(_outputFolderPath, sourceSvgDirPath);
+            var sourceSvgDirPath = Path.Combine(PackPath.PackResourcePath, productIdentity.ToLower());
+            if (!Directory.Exists(sourceSvgDirPath))
+            {
+                throw new Exception("生成打包模板: 未找到券商对应资源文件");
+            }
+            PackResourceMoveTo(packTemplatePathTemp, sourceSvgDirPath);
         }
 
         private void CopyToTarget(string sourcePath, string destPath)
@@ -180,7 +183,7 @@ namespace LinuxPackFileConsole
             var sourceFilePath = Path.Combine(resourcePath, "HevoIcon.svg");
             if (!File.Exists(sourceFilePath))
             {
-                return;
+                throw new Exception("生成打包模板: 未找到券商对应图标，HevoIcon.svg");
             }
             var directoryInfo = new DirectoryInfo(rootPath);
             var fileInfos = directoryInfo.GetFiles("HevoIcon.svg", SearchOption.AllDirectories);

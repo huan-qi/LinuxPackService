@@ -1,7 +1,7 @@
 ﻿using LinuxPackApi.Model;
 using LinuxPackApi.Service;
+using LinuxPackFile.Model;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 
 namespace LinuxPackApi.Controllers
 {
@@ -18,7 +18,8 @@ namespace LinuxPackApi.Controllers
         [HttpGet(Name = "GetPermitProducts")]
         public List<ProductModel> GetPermitProducts()
         {
-            return _packService!.GetAllPermitProducts();
+            var result = _packService!.GetAllPermitProducts();
+            return result;
         }
 
         [HttpPost(Name = "StartPack")]
@@ -28,16 +29,41 @@ namespace LinuxPackApi.Controllers
             var productMode = productModes.FirstOrDefault(item => item.ProductIdentity == packRequestModel.ProductIdentity);
             if (productMode == null)
             {
-                throw new ArgumentException($"Could not find Product : {packRequestModel.ProductIdentity}");
+                throw new Exception($"未找到对应券商 : {packRequestModel.ProductIdentity}");
             }
-            var debRecords = await _packService!.Packing(packRequestModel.ProductIdentity, "", packRequestModel.Version, packRequestModel.IsPreRelease);
+            var debRecords = await _packService!.Packing(packRequestModel.ProductIdentity, 
+                                                         productMode.ProductName, 
+                                                         packRequestModel.PackageVersion,
+                                                         packRequestModel.Version, 
+                                                         packRequestModel.IsPreRelease);
+          
             var result = new List<FileContentResult>();
             foreach (var debRecord in debRecords)
             {
                 var fileContentResult = File(debRecord.FileBytes, "application/octet-stream", debRecord.FileName);
                 result.Add(fileContentResult);
             }
+
             return result;
+        }
+
+        [HttpPost(Name = "UploadApplicationFile")]
+        public void UploadApplicationFile([FromForm]UploadApplicationFileMode uploadApplicationFileMode)
+        {
+            _packService!.UploadApplicationFile(uploadApplicationFileMode.Version, uploadApplicationFileMode.FormFile);
+        }
+
+        [HttpPost(Name = "UploadTransactionFile")]
+        public void UploadTransactionFile([FromForm]UploadTransactionFileMode uploadTransactionFileMode)
+        {
+            _packService!.UploadTransactionFile(uploadTransactionFileMode.CpuType, uploadTransactionFileMode.ProductIdentity, uploadTransactionFileMode.FormFile);
+        }
+
+
+        public class UploadFileMode
+        {
+            public string Version { get; set; }
+            public IFormFile FromFile { get; set; }
         }
     }
 }
