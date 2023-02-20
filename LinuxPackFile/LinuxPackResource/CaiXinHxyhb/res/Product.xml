@@ -5,7 +5,6 @@
     <ProductName>财富聚财PC</ProductName>
     <DefaultInstallPath>C:\财富聚财PC</DefaultInstallPath>
     <CheckUrl>http://60.191.99.112/api/checkversion2</CheckUrl>
-    <!--<AuthCenterUrl>tcp://111.23.13.186:10008</AuthCenterUrl>-->
     <AuthCenterUrl>tcp://58.20.113.201:8005</AuthCenterUrl>
     <AuthCenterUrl>tcp://111.23.13.184:8005</AuthCenterUrl>
     <AuthCenterUrl>tcp://222.240.213.15:8005</AuthCenterUrl>

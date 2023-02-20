@@ -1,13 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <hevo>
   <Product>
-    <ProductId>HevoB2BZheShang</ProductId>
-    <ProductName>浙商金融终端</ProductName>
-    <DefaultInstallPath>C:\浙商金融终端</DefaultInstallPath>
+    <ProductId>HevoB2BGuangDa</ProductId>
+    <ProductName>光大证券</ProductName>
+    <DefaultInstallPath>C:\光大证券</DefaultInstallPath>
     <CheckUrl>http://60.191.99.112/api/checkversion2</CheckUrl>
-    <AuthCenterUrl>tcp://117.149.23.216:10008</AuthCenterUrl>
-    <AuthCenterUrl>tcp://122.224.221.183:10008</AuthCenterUrl>
-    <AuthCenterUrl>tcp://101.67.164.72:10008</AuthCenterUrl>
+    <AuthCenterUrl>tcp://116.236.247.172:8080</AuthCenterUrl>
     <UnistQuestionUrl></UnistQuestionUrl>
     <OfficialDownloadUrl>https://www.stocke.com.cn/main/fwzx/rjxz/index.shtml</OfficialDownloadUrl>
     <InstallProtocolsUrl></InstallProtocolsUrl>

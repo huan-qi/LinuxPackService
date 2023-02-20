@@ -7,7 +7,6 @@
     <CheckUrl>http://60.191.99.112/api/checkversion2</CheckUrl>
     <AuthCenterUrl>tcp://218.62.40.18:8005</AuthCenterUrl>
 	  <AuthCenterUrl>tcp://218.62.40.19:8005</AuthCenterUrl>
-    <!--<AuthCenterUrl>tcp://218.62.40.50:8005</AuthCenterUrl>-->
     <UnistQuestionUrl></UnistQuestionUrl>
     <OfficialDownloadUrl>https://www.stocke.com.cn/main/fwzx/rjxz/index.shtml</OfficialDownloadUrl>
     <InstallProtocolsUrl></InstallProtocolsUrl>

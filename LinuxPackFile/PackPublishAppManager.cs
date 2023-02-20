@@ -20,12 +20,16 @@ namespace LinuxPackFile
         /// <summary>
         /// 拼接文件，进行打包
         /// </summary>
-        public void DoWork(string packTemplatePathTemp, string productIdentity, string version, bool isPreRelease)
+        public void DoWork(string packTemplatePathTemp, 
+                           string productIdentity, 
+                           string basisPackageVersion, 
+                           string productVersion, 
+                           bool isPreRelease)
         {
             var baseResPath = Path.Combine(PackPath.PackResourcePath, productIdentity.ToLower(), "res");
 
-            var amdAppSourcePath = Path.Combine(_baseDirectory, version, PackPath.LINUX_X64_APPLICATION);
-            var armAppSourcePath = Path.Combine(_baseDirectory, version, PackPath.LINUX_ARM_APPLICATION);
+            var amdAppSourcePath = Path.Combine(_baseDirectory, basisPackageVersion, PackPath.LINUX_X64_APPLICATION);
+            var armAppSourcePath = Path.Combine(_baseDirectory, basisPackageVersion, PackPath.LINUX_ARM_APPLICATION);
             var amdAppTargetPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_X64_APPLICATION, "quotes");
             var armAppTargetPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_ARM_APPLICATION, "quotes");
 
@@ -41,11 +45,11 @@ namespace LinuxPackFile
 
             if (!Directory.Exists(amdAppSourcePath))
             {
-                throw new Exception($"拼接文件并打包：未找到x64应用{version}公版包");
+                throw new Exception($"拼接文件并打包：未找到x64应用{basisPackageVersion}公版包");
             }
             if (!Directory.Exists(armAppSourcePath))
             {
-                throw new Exception($"拼接文件并打包：未找到arm应用{version}公版包");
+                throw new Exception($"拼接文件并打包：未找到arm应用{basisPackageVersion}公版包");
             }
             if (!Directory.Exists(amdLibSourcePath))
             {
@@ -61,47 +65,37 @@ namespace LinuxPackFile
             CopyResFilesTo(baseResPath, amdAppTargetPath, armAppTargetPath);
             CopyFilesTo(amdTransactionSourcePath, armTransactionSourcePath, amdTransactionTargetPath, armTransactionTargetPath);
 
-            ModifyProperties(amdAppTargetPath, armAppTargetPath, productIdentity, version, isPreRelease);
-            BuildDeb(version, packTemplatePathTemp);
+            ModifyProperties(amdAppTargetPath, armAppTargetPath, productIdentity, productVersion, isPreRelease);
+            BuildDeb(productVersion, packTemplatePathTemp);
         }
         /// <summary>
         /// 完成后将生成的两个deb文件拷贝到指定位置
         /// </summary>
         /// <param name="outputPath">生成文件位置</param>
-        public void Complete(string outputPath, string packTemplatePathTemp)
+        public void Complete(string tempOutputPath, string packTemplatePathTemp)
         {
             var linuxPackPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_PACK_TEMPLATE);
             DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
+            DirectoryInfo tempOutputDirectory = new DirectoryInfo(tempOutputPath);
             if (!linuxPackDirectory.Exists)
             {
                 return;
             }
+            if (!tempOutputDirectory.Exists)
+            {
+                tempOutputDirectory.Create();
+            }
+
             foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
             {
-                var targetPath = Path.Combine(outputPath, debFile.Name);
+                var targetPath = Path.Combine(tempOutputPath, debFile.Name);
                 File.Copy(debFile.FullName, targetPath, true);
             }
-            DeleteDirectory(packTemplatePathTemp);
         }
         /// <summary>
-        /// 完成后返回生成的两个deb文件流
+        /// 删除临时目录
         /// </summary>
-        /// <returns>文件流</returns>
-        public IEnumerable<FileInfo> Complete(string packTemplatePathTemp)
-        {
-            var debFiles = new List<FileInfo>();
-            var linuxPackPath = Path.Combine(packTemplatePathTemp, PackPath.LINUX_TEMPLATE, PackPath.LINUX_PACK_TEMPLATE);
-            DirectoryInfo linuxPackDirectory = new DirectoryInfo(linuxPackPath);
-            if (!linuxPackDirectory.Exists)
-            {
-                return debFiles;
-            }
-            foreach (var debFile in linuxPackDirectory.GetFiles("*.deb"))
-            {
-                debFiles.Add(debFile);
-            }
-            return debFiles;
-        }
+        /// <param name="packTemplatePathTemp">临时目录名</param>
         public void DeleteTempDirectory(string packTemplatePathTemp)
         {
             DeleteDirectory(packTemplatePathTemp);
@@ -161,7 +155,11 @@ namespace LinuxPackFile
         /// 修改是否是预发布版本
         /// </summary>
         /// <returns></returns>
-        private void ModifyProperties(string amdAppTargetPath, string armAppTargetPath, string productIdentity, string versionParam, bool isPreRelesseParam)
+        private void ModifyProperties(string amdAppTargetPath, 
+                                      string armAppTargetPath,
+                                      string productIdentity, 
+                                      string versionParam, 
+                                      bool isPreRelesseParam)
         {
             const string properties = "Properties";
             const string resourcesFile = "Resources.xml";

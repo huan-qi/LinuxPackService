@@ -5,8 +5,9 @@
     <ProductName>山西证券信创版</ProductName>
     <DefaultInstallPath>C:\山西证券</DefaultInstallPath>
     <CheckUrl>http://60.191.99.112/api/checkversion2</CheckUrl>
-    <AuthCenterUrl>tcp://122.224.144.140:8601</AuthCenterUrl>
-    <AuthCenterUrl>tcp://122.112.132.132:8601</AuthCenterUrl>
+    <AuthCenterUrl>tcp://221.204.19.198:10008</AuthCenterUrl>
+    <AuthCenterUrl>tcp://1.71.148.199:10008</AuthCenterUrl>
+    <AuthCenterUrl>tcp://183.201.238.212:10008</AuthCenterUrl>
     <UnistQuestionUrl></UnistQuestionUrl>
     <OfficialDownloadUrl>https://www.stocke.com.cn/main/fwzx/rjxz/index.shtml</OfficialDownloadUrl>
     <InstallProtocolsUrl></InstallProtocolsUrl>
