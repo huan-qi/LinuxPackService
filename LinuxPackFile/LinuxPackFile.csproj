@@ -46,6 +46,18 @@
     <None Update="LinuxPackResource\dongbei\res\ProductRes\Hevo.App.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="LinuxPackResource\guangda\HevoIcon.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\guangda\res\Product.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\guangda\res\ProductRes\B2BLogin.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="LinuxPackResource\guangda\res\ProductRes\Hevo.App.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="LinuxPackResource\shanxi\HevoIcon.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
